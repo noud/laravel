@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.5|dev-develop"
     },
     "require-dev": {
+        "beyondcode/laravel-er-diagram-generator": "^1.5",
         "fakerphp/faker": "^1.9.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
