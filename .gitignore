@@ -1,9 +1,9 @@
-config/erd-generator.php
+# ERD
+/graph.png
+# SaaS
 /app/Models/Application*
 !/app/Models/Application
-/app/Models/User*
-!/app/Models/User
-/graph.png
+!/app/Models/User.php
 # ^ shielded dev
 /node_modules
 /public/hot
