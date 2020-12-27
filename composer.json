@@ -9,16 +9,17 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
-        "fideloper/proxy": "^4.4",
-        "fruitcake/laravel-cors": "^2.0",
+        "fideloper/proxy": "dev-develop-8.x",
         "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.12",
-        "laravel/tinker": "^2.5"
+        "laravel/framework": "dev-develop-8.x",
+        "laravel/tinker": "dev-develop-8.x",
+        "noud/laravel-api-platform": "dev-develop-8.x",
+        "noud/laravel-db": "dev-develop-8.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
-        "laravel/sail": "^0.0.5",
+        "laravel/sail": "dev-develop-1.x",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.3.3"
@@ -58,5 +59,63 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ]
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../schema-builder"
+        },
+        {
+            "type": "path",
+            "url": "../inflector"
+        },
+        {
+            "type": "path",
+            "url": "../flash"
+        },
+        {
+            "type": "path",
+            "url": "../laravel-cors"
+        },
+        {
+            "type": "path",
+            "url": "../laravel-generator"
+        },
+        {
+            "type": "path",
+            "url": "../swaggervel"
+        },
+        {
+            "type": "path",
+            "url": "../laravel-api-platform"
+        },
+        {
+            "type": "path",
+            "url": "../laravel-db"
+        },
+        {
+            "type": "path",
+            "url": "../flare-client-php"
+        },
+        {
+            "type": "path",
+            "url": "../framework"
+        },
+        {
+            "type": "path",
+            "url": "../ignition"
+        },
+        {
+            "type": "path",
+            "url": "../sail"
+        },
+        {
+            "type": "path",
+            "url": "../tinker"
+        },
+        {
+            "type": "path",
+            "url": "../TrustedProxy"
+        }
+   ]
 }
