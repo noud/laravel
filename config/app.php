@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         Agontuk\Schema\SchemaServiceProvider::class,
+        Appointer\Swaggervel\SwaggervelServiceProvider::class,
 
         /*
          * Application Service Providers...
