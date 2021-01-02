@@ -1,3 +1,17 @@
+graph.png
+/app/Http/Controllers/API/*
+/app/Http/Requests/API/*
+/app/Models/*
+/app/Repositories
+/database/factories
+/database/migrations
+/public/vendor
+/resources/model_schemas
+/resources/views/vendor
+/storage/docs
+/routes/api.php
+/tests
+
 /node_modules
 /public/hot
 /public/storage
