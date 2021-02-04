@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\API\CreateAdresAPIRequest;
-use App\Http\Requests\API\UpdateAdresAPIRequest;
-use App\Models\Adres;
-use App\Repositories\AdresRepository;
+use App\Http\Requests\API\CreateNormalNounAPIRequest;
+use App\Http\Requests\API\UpdateNormalNounAPIRequest;
+use App\Models\NormalNoun;
+use App\Repositories\NormalNounRepository;
 use Illuminate\Http\Request;
-use API\Platform\Http\Controllers\AppBaseController;
+use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
- * Class AdresController
+ * Class NormalNounController
  * @package App\Http\Controllers\API
  */
 
-class AdresAPIController extends AppBaseController
+class NormalNounAPIController extends AppBaseController
 {
-    /** @var  AdresRepository */
-    private $adresRepository;
+    /** @var  NormalNounRepository */
+    private $normalNounRepository;
 
-    public function __construct(AdresRepository $adresRepo)
+    public function __construct(NormalNounRepository $normalNounRepo)
     {
-        $this->adresRepository = $adresRepo;
+        $this->normalNounRepository = $normalNounRepo;
     }
 
     /**
@@ -30,10 +30,10 @@ class AdresAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/adres",
-     *      summary="Get a listing of the Adres.",
-     *      tags={"Adres"},
-     *      description="Get all Adres",
+     *      path="/normalNouns",
+     *      summary="Get a listing of the NormalNouns.",
+     *      tags={"NormalNoun"},
+     *      description="Get all NormalNouns",
      *      produces={"application/json"},
      *      @SWG\Response(
      *          response=200,
@@ -47,7 +47,7 @@ class AdresAPIController extends AppBaseController
      *              @SWG\Property(
      *                  property="data",
      *                  type="array",
-     *                  @SWG\Items(ref="#/definitions/Adres")
+     *                  @SWG\Items(ref="#/definitions/NormalNoun")
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -59,43 +59,31 @@ class AdresAPIController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $skip = $request->get('skip');
-        $limit = $request->get('limit');
-        $page = $request->get('page');
-
-        $limit = 2; // @todo middleware add configuration limit
-        $total_adressen = Adres::count();
-        if ($page) {
-            $skip = $limit * $page;
-        } else {
-            $page = 1;
-        }
-
-        $adres = $this->adresRepository->all(
-            $request->except(['skip', 'limit', 'page']),
-            $skip,
-            $limit
+        $normalNouns = $this->normalNounRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
         );
 
-        return $this->sendPaginatedResponse($adres->toArray(), 'Adres retrieved successfully', $total_adressen, $limit, 'adres', $page);
+        return $this->sendResponse($normalNouns->toArray(), 'Normal Nouns retrieved successfully');
     }
 
     /**
-     * @param CreateAdresAPIRequest $request
+     * @param CreateNormalNounAPIRequest $request
      * @return Response
      *
      * @SWG\Post(
-     *      path="/adres",
-     *      summary="Store a newly created Adres in storage",
-     *      tags={"Adres"},
-     *      description="Store Adres",
+     *      path="/normalNouns",
+     *      summary="Store a newly created NormalNoun in storage",
+     *      tags={"NormalNoun"},
+     *      description="Store NormalNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Adres that should be stored",
+     *          description="NormalNoun that should be stored",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Adres")
+     *          @SWG\Schema(ref="#/definitions/NormalNoun")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -108,7 +96,7 @@ class AdresAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Adres"
+     *                  ref="#/definitions/NormalNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -118,13 +106,13 @@ class AdresAPIController extends AppBaseController
      *      )
      * )
      */
-    public function store(CreateAdresAPIRequest $request)
+    public function store(CreateNormalNounAPIRequest $request)
     {
         $input = $request->all();
 
-        $adres = $this->adresRepository->create($input);
+        $normalNoun = $this->normalNounRepository->create($input);
 
-        return $this->sendResponse($adres->toArray(), 'Adres saved successfully');
+        return $this->sendResponse($normalNoun->toArray(), 'Normal Noun saved successfully');
     }
 
     /**
@@ -132,14 +120,14 @@ class AdresAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/adres/{id}",
-     *      summary="Display the specified Adres",
-     *      tags={"Adres"},
-     *      description="Get Adres",
+     *      path="/normalNouns/{id}",
+     *      summary="Display the specified NormalNoun",
+     *      tags={"NormalNoun"},
+     *      description="Get NormalNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Adres",
+     *          description="id of NormalNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -155,7 +143,7 @@ class AdresAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Adres"
+     *                  ref="#/definitions/NormalNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -167,30 +155,30 @@ class AdresAPIController extends AppBaseController
      */
     public function show($id)
     {
-        /** @var Adres $adres */
-        $adres = $this->adresRepository->find($id);
+        /** @var NormalNoun $normalNoun */
+        $normalNoun = $this->normalNounRepository->find($id);
 
-        if (empty($adres)) {
-            return $this->sendError('Adres not found');
+        if (empty($normalNoun)) {
+            return $this->sendError('Normal Noun not found');
         }
 
-        return $this->sendResponse($adres->toArray(), 'Adres retrieved successfully');
+        return $this->sendResponse($normalNoun->toArray(), 'Normal Noun retrieved successfully');
     }
 
     /**
      * @param int $id
-     * @param UpdateAdresAPIRequest $request
+     * @param UpdateNormalNounAPIRequest $request
      * @return Response
      *
      * @SWG\Put(
-     *      path="/adres/{id}",
-     *      summary="Update the specified Adres in storage",
-     *      tags={"Adres"},
-     *      description="Update Adres",
+     *      path="/normalNouns/{id}",
+     *      summary="Update the specified NormalNoun in storage",
+     *      tags={"NormalNoun"},
+     *      description="Update NormalNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Adres",
+     *          description="id of NormalNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -198,9 +186,9 @@ class AdresAPIController extends AppBaseController
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Adres that should be updated",
+     *          description="NormalNoun that should be updated",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Adres")
+     *          @SWG\Schema(ref="#/definitions/NormalNoun")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -213,7 +201,7 @@ class AdresAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Adres"
+     *                  ref="#/definitions/NormalNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -223,20 +211,20 @@ class AdresAPIController extends AppBaseController
      *      )
      * )
      */
-    public function update($id, UpdateAdresAPIRequest $request)
+    public function update($id, UpdateNormalNounAPIRequest $request)
     {
         $input = $request->all();
 
-        /** @var Adres $adres */
-        $adres = $this->adresRepository->find($id);
+        /** @var NormalNoun $normalNoun */
+        $normalNoun = $this->normalNounRepository->find($id);
 
-        if (empty($adres)) {
-            return $this->sendError('Adres not found');
+        if (empty($normalNoun)) {
+            return $this->sendError('Normal Noun not found');
         }
 
-        $adres = $this->adresRepository->update($input, $id);
+        $normalNoun = $this->normalNounRepository->update($input, $id);
 
-        return $this->sendResponse($adres->toArray(), 'Adres updated successfully');
+        return $this->sendResponse($normalNoun->toArray(), 'NormalNoun updated successfully');
     }
 
     /**
@@ -244,14 +232,14 @@ class AdresAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Delete(
-     *      path="/adres/{id}",
-     *      summary="Remove the specified Adres from storage",
-     *      tags={"Adres"},
-     *      description="Delete Adres",
+     *      path="/normalNouns/{id}",
+     *      summary="Remove the specified NormalNoun from storage",
+     *      tags={"NormalNoun"},
+     *      description="Delete NormalNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Adres",
+     *          description="id of NormalNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -279,15 +267,15 @@ class AdresAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var Adres $adres */
-        $adres = $this->adresRepository->find($id);
+        /** @var NormalNoun $normalNoun */
+        $normalNoun = $this->normalNounRepository->find($id);
 
-        if (empty($adres)) {
-            return $this->sendError('Adres not found');
+        if (empty($normalNoun)) {
+            return $this->sendError('Normal Noun not found');
         }
 
-        $adres->delete();
+        $normalNoun->delete();
 
-        return $this->sendSuccess('Adres deleted successfully');
+        return $this->sendSuccess('Normal Noun deleted successfully');
     }
 }

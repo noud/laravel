@@ -33,6 +33,8 @@ return [
     'whitelist' => [
         // App\User::class,
         // App\Post::class,
+        App\Models\Book::class,
+        App\Models\Review::class,
     ],
 
     /*

@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\API\CreateLocatieAPIRequest;
-use App\Http\Requests\API\UpdateLocatieAPIRequest;
-use App\Models\Locatie;
-use App\Repositories\LocatieRepository;
+use App\Http\Requests\API\CreateAdjectiveAPIRequest;
+use App\Http\Requests\API\UpdateAdjectiveAPIRequest;
+use App\Models\Adjective;
+use App\Repositories\AdjectiveRepository;
 use Illuminate\Http\Request;
-use API\Platform\Http\Controllers\AppBaseController;
+use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
- * Class LocatieController
+ * Class AdjectiveController
  * @package App\Http\Controllers\API
  */
 
-class LocatieAPIController extends AppBaseController
+class AdjectiveAPIController extends AppBaseController
 {
-    /** @var  LocatieRepository */
-    private $locatieRepository;
+    /** @var  AdjectiveRepository */
+    private $adjectiveRepository;
 
-    public function __construct(LocatieRepository $locatieRepo)
+    public function __construct(AdjectiveRepository $adjectiveRepo)
     {
-        $this->locatieRepository = $locatieRepo;
+        $this->adjectiveRepository = $adjectiveRepo;
     }
 
     /**
@@ -30,10 +30,10 @@ class LocatieAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/locaties",
-     *      summary="Get a listing of the Locaties.",
-     *      tags={"Locatie"},
-     *      description="Get all Locaties",
+     *      path="/adjectives",
+     *      summary="Get a listing of the Adjectives.",
+     *      tags={"Adjective"},
+     *      description="Get all Adjectives",
      *      produces={"application/json"},
      *      @SWG\Response(
      *          response=200,
@@ -47,7 +47,7 @@ class LocatieAPIController extends AppBaseController
      *              @SWG\Property(
      *                  property="data",
      *                  type="array",
-     *                  @SWG\Items(ref="#/definitions/Locatie")
+     *                  @SWG\Items(ref="#/definitions/Adjective")
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -59,43 +59,31 @@ class LocatieAPIController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $skip = $request->get('skip');
-        $limit = $request->get('limit');
-        $page = $request->get('page');
-
-        $limit = 2; // @todo middleware add configuration limit
-        $total_locaties = Locatie::count();
-        if ($page) {
-            $skip = $limit * $page;
-        } else {
-            $page = 1;
-        }
-
-        $locaties = $this->locatieRepository->all(
-            $request->except(['skip', 'limit', 'page']),
-            $skip,
-            $limit
+        $adjectives = $this->adjectiveRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
         );
 
-        return $this->sendPaginatedResponse($locaties->toArray(), 'Locaties retrieved successfully', $total_locaties, $limit, 'locatie', $page);
+        return $this->sendResponse($adjectives->toArray(), 'Adjectives retrieved successfully');
     }
 
     /**
-     * @param CreateLocatieAPIRequest $request
+     * @param CreateAdjectiveAPIRequest $request
      * @return Response
      *
      * @SWG\Post(
-     *      path="/locaties",
-     *      summary="Store a newly created Locatie in storage",
-     *      tags={"Locatie"},
-     *      description="Store Locatie",
+     *      path="/adjectives",
+     *      summary="Store a newly created Adjective in storage",
+     *      tags={"Adjective"},
+     *      description="Store Adjective",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Locatie that should be stored",
+     *          description="Adjective that should be stored",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Locatie")
+     *          @SWG\Schema(ref="#/definitions/Adjective")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -108,7 +96,7 @@ class LocatieAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Locatie"
+     *                  ref="#/definitions/Adjective"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -118,13 +106,13 @@ class LocatieAPIController extends AppBaseController
      *      )
      * )
      */
-    public function store(CreateLocatieAPIRequest $request)
+    public function store(CreateAdjectiveAPIRequest $request)
     {
         $input = $request->all();
 
-        $locatie = $this->locatieRepository->create($input);
+        $adjective = $this->adjectiveRepository->create($input);
 
-        return $this->sendResponse($locatie->toArray(), 'Locatie saved successfully');
+        return $this->sendResponse($adjective->toArray(), 'Adjective saved successfully');
     }
 
     /**
@@ -132,14 +120,14 @@ class LocatieAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/locaties/{id}",
-     *      summary="Display the specified Locatie",
-     *      tags={"Locatie"},
-     *      description="Get Locatie",
+     *      path="/adjectives/{id}",
+     *      summary="Display the specified Adjective",
+     *      tags={"Adjective"},
+     *      description="Get Adjective",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Locatie",
+     *          description="id of Adjective",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -155,7 +143,7 @@ class LocatieAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Locatie"
+     *                  ref="#/definitions/Adjective"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -167,30 +155,30 @@ class LocatieAPIController extends AppBaseController
      */
     public function show($id)
     {
-        /** @var Locatie $locatie */
-        $locatie = $this->locatieRepository->find($id);
+        /** @var Adjective $adjective */
+        $adjective = $this->adjectiveRepository->find($id);
 
-        if (empty($locatie)) {
-            return $this->sendError('Locatie not found');
+        if (empty($adjective)) {
+            return $this->sendError('Adjective not found');
         }
 
-        return $this->sendResponse($locatie->toArray(), 'Locatie retrieved successfully');
+        return $this->sendResponse($adjective->toArray(), 'Adjective retrieved successfully');
     }
 
     /**
      * @param int $id
-     * @param UpdateLocatieAPIRequest $request
+     * @param UpdateAdjectiveAPIRequest $request
      * @return Response
      *
      * @SWG\Put(
-     *      path="/locaties/{id}",
-     *      summary="Update the specified Locatie in storage",
-     *      tags={"Locatie"},
-     *      description="Update Locatie",
+     *      path="/adjectives/{id}",
+     *      summary="Update the specified Adjective in storage",
+     *      tags={"Adjective"},
+     *      description="Update Adjective",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Locatie",
+     *          description="id of Adjective",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -198,9 +186,9 @@ class LocatieAPIController extends AppBaseController
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Locatie that should be updated",
+     *          description="Adjective that should be updated",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Locatie")
+     *          @SWG\Schema(ref="#/definitions/Adjective")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -213,7 +201,7 @@ class LocatieAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Locatie"
+     *                  ref="#/definitions/Adjective"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -223,20 +211,20 @@ class LocatieAPIController extends AppBaseController
      *      )
      * )
      */
-    public function update($id, UpdateLocatieAPIRequest $request)
+    public function update($id, UpdateAdjectiveAPIRequest $request)
     {
         $input = $request->all();
 
-        /** @var Locatie $locatie */
-        $locatie = $this->locatieRepository->find($id);
+        /** @var Adjective $adjective */
+        $adjective = $this->adjectiveRepository->find($id);
 
-        if (empty($locatie)) {
-            return $this->sendError('Locatie not found');
+        if (empty($adjective)) {
+            return $this->sendError('Adjective not found');
         }
 
-        $locatie = $this->locatieRepository->update($input, $id);
+        $adjective = $this->adjectiveRepository->update($input, $id);
 
-        return $this->sendResponse($locatie->toArray(), 'Locatie updated successfully');
+        return $this->sendResponse($adjective->toArray(), 'Adjective updated successfully');
     }
 
     /**
@@ -244,14 +232,14 @@ class LocatieAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Delete(
-     *      path="/locaties/{id}",
-     *      summary="Remove the specified Locatie from storage",
-     *      tags={"Locatie"},
-     *      description="Delete Locatie",
+     *      path="/adjectives/{id}",
+     *      summary="Remove the specified Adjective from storage",
+     *      tags={"Adjective"},
+     *      description="Delete Adjective",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Locatie",
+     *          description="id of Adjective",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -279,15 +267,15 @@ class LocatieAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var Locatie $locatie */
-        $locatie = $this->locatieRepository->find($id);
+        /** @var Adjective $adjective */
+        $adjective = $this->adjectiveRepository->find($id);
 
-        if (empty($locatie)) {
-            return $this->sendError('Locatie not found');
+        if (empty($adjective)) {
+            return $this->sendError('Adjective not found');
         }
 
-        $locatie->delete();
+        $adjective->delete();
 
-        return $this->sendSuccess('Locatie deleted successfully');
+        return $this->sendSuccess('Adjective deleted successfully');
     }
 }

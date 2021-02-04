@@ -7,9 +7,9 @@ use API\Platform\Http\Controllers\Utils\PaginatedResponseUtil;
 use Response;
 
 /**
- * @SWG\Swagger(
+ * @ SWG\Swagger(
  *   basePath="/api/v1",
- *   @SWG\Info(
+ *   @ SWG\Info(
  *     title="Laravel Generator APIs",
  *     version="1.0.0",
  *   )

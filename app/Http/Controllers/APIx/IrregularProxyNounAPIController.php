@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\API\CreateAfbeeldingAPIRequest;
-use App\Http\Requests\API\UpdateAfbeeldingAPIRequest;
-use App\Models\Afbeelding;
-use App\Repositories\AfbeeldingRepository;
+use App\Http\Requests\API\CreateIrregularProxyNounAPIRequest;
+use App\Http\Requests\API\UpdateIrregularProxyNounAPIRequest;
+use App\Models\IrregularProxyNoun;
+use App\Repositories\IrregularProxyNounRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
- * Class AfbeeldingController
+ * Class IrregularProxyNounController
  * @package App\Http\Controllers\API
  */
 
-class AfbeeldingAPIController extends AppBaseController
+class IrregularProxyNounAPIController extends AppBaseController
 {
-    /** @var  AfbeeldingRepository */
-    private $afbeeldingRepository;
+    /** @var  IrregularProxyNounRepository */
+    private $irregularProxyNounRepository;
 
-    public function __construct(AfbeeldingRepository $afbeeldingRepo)
+    public function __construct(IrregularProxyNounRepository $irregularProxyNounRepo)
     {
-        $this->afbeeldingRepository = $afbeeldingRepo;
+        $this->irregularProxyNounRepository = $irregularProxyNounRepo;
     }
 
     /**
@@ -30,10 +30,10 @@ class AfbeeldingAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/afbeeldings",
-     *      summary="Get a listing of the Afbeeldings.",
-     *      tags={"Afbeelding"},
-     *      description="Get all Afbeeldings",
+     *      path="/irregularProxyNouns",
+     *      summary="Get a listing of the IrregularProxyNouns.",
+     *      tags={"IrregularProxyNoun"},
+     *      description="Get all IrregularProxyNouns",
      *      produces={"application/json"},
      *      @SWG\Response(
      *          response=200,
@@ -47,7 +47,7 @@ class AfbeeldingAPIController extends AppBaseController
      *              @SWG\Property(
      *                  property="data",
      *                  type="array",
-     *                  @SWG\Items(ref="#/definitions/Afbeelding")
+     *                  @SWG\Items(ref="#/definitions/IrregularProxyNoun")
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -59,43 +59,31 @@ class AfbeeldingAPIController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $skip = $request->get('skip');
-        $limit = $request->get('limit');
-        $page = $request->get('page');
-
-        $limit = 2; // @todo middleware add configuration limit
-        $total_afbeeldings = Afbeelding::count();
-        if ($page) {
-            $skip = $limit * $page;
-        } else {
-            $page = 1;
-        }
-
-        $afbeeldings = $this->afbeeldingRepository->all(
-            $request->except(['skip', 'limit', 'page']),
-            $skip,
-            $limit
+        $irregularProxyNouns = $this->irregularProxyNounRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
         );
 
-        return $this->sendPaginatedResponse($afbeeldings->toArray(), 'Afbeeldings retrieved successfully', $total_afbeeldings, $limit, 'afbeelding', $page);
+        return $this->sendResponse($irregularProxyNouns->toArray(), 'Irregular Proxy Nouns retrieved successfully');
     }
 
     /**
-     * @param CreateAfbeeldingAPIRequest $request
+     * @param CreateIrregularProxyNounAPIRequest $request
      * @return Response
      *
      * @SWG\Post(
-     *      path="/afbeeldings",
-     *      summary="Store a newly created Afbeelding in storage",
-     *      tags={"Afbeelding"},
-     *      description="Store Afbeelding",
+     *      path="/irregularProxyNouns",
+     *      summary="Store a newly created IrregularProxyNoun in storage",
+     *      tags={"IrregularProxyNoun"},
+     *      description="Store IrregularProxyNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Afbeelding that should be stored",
+     *          description="IrregularProxyNoun that should be stored",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Afbeelding")
+     *          @SWG\Schema(ref="#/definitions/IrregularProxyNoun")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -108,7 +96,7 @@ class AfbeeldingAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Afbeelding"
+     *                  ref="#/definitions/IrregularProxyNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -118,13 +106,13 @@ class AfbeeldingAPIController extends AppBaseController
      *      )
      * )
      */
-    public function store(CreateAfbeeldingAPIRequest $request)
+    public function store(CreateIrregularProxyNounAPIRequest $request)
     {
         $input = $request->all();
 
-        $afbeelding = $this->afbeeldingRepository->create($input);
+        $irregularProxyNoun = $this->irregularProxyNounRepository->create($input);
 
-        return $this->sendResponse($afbeelding->toArray(), 'Afbeelding saved successfully');
+        return $this->sendResponse($irregularProxyNoun->toArray(), 'Irregular Proxy Noun saved successfully');
     }
 
     /**
@@ -132,14 +120,14 @@ class AfbeeldingAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/afbeeldings/{id}",
-     *      summary="Display the specified Afbeelding",
-     *      tags={"Afbeelding"},
-     *      description="Get Afbeelding",
+     *      path="/irregularProxyNouns/{id}",
+     *      summary="Display the specified IrregularProxyNoun",
+     *      tags={"IrregularProxyNoun"},
+     *      description="Get IrregularProxyNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Afbeelding",
+     *          description="id of IrregularProxyNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -155,7 +143,7 @@ class AfbeeldingAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Afbeelding"
+     *                  ref="#/definitions/IrregularProxyNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -167,30 +155,30 @@ class AfbeeldingAPIController extends AppBaseController
      */
     public function show($id)
     {
-        /** @var Afbeelding $afbeelding */
-        $afbeelding = $this->afbeeldingRepository->find($id);
+        /** @var IrregularProxyNoun $irregularProxyNoun */
+        $irregularProxyNoun = $this->irregularProxyNounRepository->find($id);
 
-        if (empty($afbeelding)) {
-            return $this->sendError('Afbeelding not found');
+        if (empty($irregularProxyNoun)) {
+            return $this->sendError('Irregular Proxy Noun not found');
         }
 
-        return $this->sendResponse($afbeelding->toArray(), 'Afbeelding retrieved successfully');
+        return $this->sendResponse($irregularProxyNoun->toArray(), 'Irregular Proxy Noun retrieved successfully');
     }
 
     /**
      * @param int $id
-     * @param UpdateAfbeeldingAPIRequest $request
+     * @param UpdateIrregularProxyNounAPIRequest $request
      * @return Response
      *
      * @SWG\Put(
-     *      path="/afbeeldings/{id}",
-     *      summary="Update the specified Afbeelding in storage",
-     *      tags={"Afbeelding"},
-     *      description="Update Afbeelding",
+     *      path="/irregularProxyNouns/{id}",
+     *      summary="Update the specified IrregularProxyNoun in storage",
+     *      tags={"IrregularProxyNoun"},
+     *      description="Update IrregularProxyNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Afbeelding",
+     *          description="id of IrregularProxyNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -198,9 +186,9 @@ class AfbeeldingAPIController extends AppBaseController
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Afbeelding that should be updated",
+     *          description="IrregularProxyNoun that should be updated",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Afbeelding")
+     *          @SWG\Schema(ref="#/definitions/IrregularProxyNoun")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -213,7 +201,7 @@ class AfbeeldingAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Afbeelding"
+     *                  ref="#/definitions/IrregularProxyNoun"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -223,20 +211,20 @@ class AfbeeldingAPIController extends AppBaseController
      *      )
      * )
      */
-    public function update($id, UpdateAfbeeldingAPIRequest $request)
+    public function update($id, UpdateIrregularProxyNounAPIRequest $request)
     {
         $input = $request->all();
 
-        /** @var Afbeelding $afbeelding */
-        $afbeelding = $this->afbeeldingRepository->find($id);
+        /** @var IrregularProxyNoun $irregularProxyNoun */
+        $irregularProxyNoun = $this->irregularProxyNounRepository->find($id);
 
-        if (empty($afbeelding)) {
-            return $this->sendError('Afbeelding not found');
+        if (empty($irregularProxyNoun)) {
+            return $this->sendError('Irregular Proxy Noun not found');
         }
 
-        $afbeelding = $this->afbeeldingRepository->update($input, $id);
+        $irregularProxyNoun = $this->irregularProxyNounRepository->update($input, $id);
 
-        return $this->sendResponse($afbeelding->toArray(), 'Afbeelding updated successfully');
+        return $this->sendResponse($irregularProxyNoun->toArray(), 'IrregularProxyNoun updated successfully');
     }
 
     /**
@@ -244,14 +232,14 @@ class AfbeeldingAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Delete(
-     *      path="/afbeeldings/{id}",
-     *      summary="Remove the specified Afbeelding from storage",
-     *      tags={"Afbeelding"},
-     *      description="Delete Afbeelding",
+     *      path="/irregularProxyNouns/{id}",
+     *      summary="Remove the specified IrregularProxyNoun from storage",
+     *      tags={"IrregularProxyNoun"},
+     *      description="Delete IrregularProxyNoun",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Afbeelding",
+     *          description="id of IrregularProxyNoun",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -279,15 +267,15 @@ class AfbeeldingAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var Afbeelding $afbeelding */
-        $afbeelding = $this->afbeeldingRepository->find($id);
+        /** @var IrregularProxyNoun $irregularProxyNoun */
+        $irregularProxyNoun = $this->irregularProxyNounRepository->find($id);
 
-        if (empty($afbeelding)) {
-            return $this->sendError('Afbeelding not found');
+        if (empty($irregularProxyNoun)) {
+            return $this->sendError('Irregular Proxy Noun not found');
         }
 
-        $afbeelding->delete();
+        $irregularProxyNoun->delete();
 
-        return $this->sendSuccess('Afbeelding deleted successfully');
+        return $this->sendSuccess('Irregular Proxy Noun deleted successfully');
     }
 }

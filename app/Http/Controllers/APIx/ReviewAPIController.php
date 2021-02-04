@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\API\CreatePolitiebureauAPIRequest;
-use App\Http\Requests\API\UpdatePolitiebureauAPIRequest;
-use App\Models\Politiebureau;
-use App\Repositories\PolitiebureauRepository;
+use App\Http\Requests\API\CreateReviewAPIRequest;
+use App\Http\Requests\API\UpdateReviewAPIRequest;
+use App\Models\Review;
+use App\Repositories\ReviewRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
 use Response;
 
 /**
- * Class PolitiebureauController
+ * Class ReviewController
  * @package App\Http\Controllers\API
  */
 
-class PolitiebureauAPIController extends AppBaseController
+class ReviewAPIController extends AppBaseController
 {
-    /** @var  PolitiebureauRepository */
-    private $politiebureauRepository;
+    /** @var  ReviewRepository */
+    private $reviewRepository;
 
-    public function __construct(PolitiebureauRepository $politiebureauRepo)
+    public function __construct(ReviewRepository $reviewRepo)
     {
-        $this->politiebureauRepository = $politiebureauRepo;
+        $this->reviewRepository = $reviewRepo;
     }
 
     /**
@@ -30,10 +30,10 @@ class PolitiebureauAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/politiebureaus",
-     *      summary="Get a listing of the Politiebureaus.",
-     *      tags={"Politiebureau"},
-     *      description="Get all Politiebureaus",
+     *      path="/reviews",
+     *      summary="Get a listing of the Reviews.",
+     *      tags={"Review"},
+     *      description="Get all Reviews",
      *      produces={"application/json"},
      *      @SWG\Response(
      *          response=200,
@@ -47,7 +47,7 @@ class PolitiebureauAPIController extends AppBaseController
      *              @SWG\Property(
      *                  property="data",
      *                  type="array",
-     *                  @SWG\Items(ref="#/definitions/Politiebureau")
+     *                  @SWG\Items(ref="#/definitions/Review")
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -59,43 +59,31 @@ class PolitiebureauAPIController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $skip = $request->get('skip');
-        $limit = $request->get('limit');
-        $page = $request->get('page');
-
-        $limit = 2; // @todo middleware add configuration limit
-        $total_politiebureaus = Politiebureau::count();
-        if ($page) {
-            $skip = $limit * $page;
-        } else {
-            $page = 1;
-        }
-
-        $politiebureaus = $this->politiebureauRepository->all(
-            $request->except(['skip', 'limit', 'page']),
-            $skip,
-            $limit
+        $reviews = $this->reviewRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
         );
 
-        return $this->sendPaginatedResponse($politiebureaus->toArray(), 'Politibureauses retrieved successfully', $total_politiebureaus, $limit, 'politiebureaus', $page);
+        return $this->sendResponse($reviews->toArray(), 'Reviews retrieved successfully');
     }
 
     /**
-     * @param CreatePolitiebureauAPIRequest $request
+     * @param CreateReviewAPIRequest $request
      * @return Response
      *
      * @SWG\Post(
-     *      path="/politiebureaus",
-     *      summary="Store a newly created Politiebureau in storage",
-     *      tags={"Politiebureau"},
-     *      description="Store Politiebureau",
+     *      path="/reviews",
+     *      summary="Store a newly created Review in storage",
+     *      tags={"Review"},
+     *      description="Store Review",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Politiebureau that should be stored",
+     *          description="Review that should be stored",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Politiebureau")
+     *          @SWG\Schema(ref="#/definitions/Review")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -108,7 +96,7 @@ class PolitiebureauAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Politiebureau"
+     *                  ref="#/definitions/Review"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -118,13 +106,13 @@ class PolitiebureauAPIController extends AppBaseController
      *      )
      * )
      */
-    public function store(CreatePolitiebureauAPIRequest $request)
+    public function store(CreateReviewAPIRequest $request)
     {
         $input = $request->all();
 
-        $politiebureau = $this->politiebureauRepository->create($input);
+        $review = $this->reviewRepository->create($input);
 
-        return $this->sendResponse($politiebureau->toArray(), 'Politiebureau saved successfully');
+        return $this->sendResponse($review->toArray(), 'Review saved successfully');
     }
 
     /**
@@ -132,14 +120,14 @@ class PolitiebureauAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Get(
-     *      path="/politiebureaus/{id}",
-     *      summary="Display the specified Politiebureau",
-     *      tags={"Politiebureau"},
-     *      description="Get Politiebureau",
+     *      path="/reviews/{id}",
+     *      summary="Display the specified Review",
+     *      tags={"Review"},
+     *      description="Get Review",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Politiebureau",
+     *          description="id of Review",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -155,7 +143,7 @@ class PolitiebureauAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Politiebureau"
+     *                  ref="#/definitions/Review"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -167,30 +155,30 @@ class PolitiebureauAPIController extends AppBaseController
      */
     public function show($id)
     {
-        /** @var Politiebureau $politiebureau */
-        $politiebureau = $this->politiebureauRepository->find($id);
+        /** @var Review $review */
+        $review = $this->reviewRepository->find($id);
 
-        if (empty($politiebureau)) {
-            return $this->sendError('Politiebureau not found');
+        if (empty($review)) {
+            return $this->sendError('Review not found');
         }
 
-        return $this->sendResponse($politiebureau->toArray(), 'Politiebureau retrieved successfully');
+        return $this->sendResponse($review->toArray(), 'Review retrieved successfully');
     }
 
     /**
      * @param int $id
-     * @param UpdatePolitiebureauAPIRequest $request
+     * @param UpdateReviewAPIRequest $request
      * @return Response
      *
      * @SWG\Put(
-     *      path="/politiebureaus/{id}",
-     *      summary="Update the specified Politiebureau in storage",
-     *      tags={"Politiebureau"},
-     *      description="Update Politiebureau",
+     *      path="/reviews/{id}",
+     *      summary="Update the specified Review in storage",
+     *      tags={"Review"},
+     *      description="Update Review",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Politiebureau",
+     *          description="id of Review",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -198,9 +186,9 @@ class PolitiebureauAPIController extends AppBaseController
      *      @SWG\Parameter(
      *          name="body",
      *          in="body",
-     *          description="Politiebureau that should be updated",
+     *          description="Review that should be updated",
      *          required=false,
-     *          @SWG\Schema(ref="#/definitions/Politiebureau")
+     *          @SWG\Schema(ref="#/definitions/Review")
      *      ),
      *      @SWG\Response(
      *          response=200,
@@ -213,7 +201,7 @@ class PolitiebureauAPIController extends AppBaseController
      *              ),
      *              @SWG\Property(
      *                  property="data",
-     *                  ref="#/definitions/Politiebureau"
+     *                  ref="#/definitions/Review"
      *              ),
      *              @SWG\Property(
      *                  property="message",
@@ -223,20 +211,20 @@ class PolitiebureauAPIController extends AppBaseController
      *      )
      * )
      */
-    public function update($id, UpdatePolitiebureauAPIRequest $request)
+    public function update($id, UpdateReviewAPIRequest $request)
     {
         $input = $request->all();
 
-        /** @var Politiebureau $politiebureau */
-        $politiebureau = $this->politiebureauRepository->find($id);
+        /** @var Review $review */
+        $review = $this->reviewRepository->find($id);
 
-        if (empty($politiebureau)) {
-            return $this->sendError('Politiebureau not found');
+        if (empty($review)) {
+            return $this->sendError('Review not found');
         }
 
-        $politiebureau = $this->politiebureauRepository->update($input, $id);
+        $review = $this->reviewRepository->update($input, $id);
 
-        return $this->sendResponse($politiebureau->toArray(), 'Politiebureau updated successfully');
+        return $this->sendResponse($review->toArray(), 'Review updated successfully');
     }
 
     /**
@@ -244,14 +232,14 @@ class PolitiebureauAPIController extends AppBaseController
      * @return Response
      *
      * @SWG\Delete(
-     *      path="/politiebureaus/{id}",
-     *      summary="Remove the specified Politiebureau from storage",
-     *      tags={"Politiebureau"},
-     *      description="Delete Politiebureau",
+     *      path="/reviews/{id}",
+     *      summary="Remove the specified Review from storage",
+     *      tags={"Review"},
+     *      description="Delete Review",
      *      produces={"application/json"},
      *      @SWG\Parameter(
      *          name="id",
-     *          description="id of Politiebureau",
+     *          description="id of Review",
      *          type="integer",
      *          required=true,
      *          in="path"
@@ -279,15 +267,15 @@ class PolitiebureauAPIController extends AppBaseController
      */
     public function destroy($id)
     {
-        /** @var Politiebureau $politiebureau */
-        $politiebureau = $this->politiebureauRepository->find($id);
+        /** @var Review $review */
+        $review = $this->reviewRepository->find($id);
 
-        if (empty($politiebureau)) {
-            return $this->sendError('Politiebureau not found');
+        if (empty($review)) {
+            return $this->sendError('Review not found');
         }
 
-        $politiebureau->delete();
+        $review->delete();
 
-        return $this->sendSuccess('Politiebureau deleted successfully');
+        return $this->sendSuccess('Review deleted successfully');
     }
 }

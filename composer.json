@@ -14,7 +14,8 @@
         "laravel/framework": "dev-develop-8.x",
         "laravel/tinker": "dev-develop-8.x",
         "noud/laravel-api-platform": "dev-develop-8.x",
-        "noud/laravel-db": "dev-develop-8.0"
+        "noud/laravel-db": "dev-develop-8.0",
+        "noud/nouns-laravel": "dev-main"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -87,7 +88,7 @@
         },
         {
             "type": "path",
-            "url": "../laravel-api-platform"
+            "url": "../../api-platform/api-platform-laravel"
         },
         {
             "type": "path",
@@ -116,6 +117,10 @@
         {
             "type": "path",
             "url": "../TrustedProxy"
+        },
+        {
+            "type": "path",
+            "url": "../nouns-laravel"
         }
    ]
 }
